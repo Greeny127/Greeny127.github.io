@@ -1,7 +1,7 @@
-import { useState } from "react";
-import TerminalScreen from "./components/Intro/TerminalScreen";
-import ConfirmStart from "./components/Intro/ConfirmStart";
+import { useEffect, useState } from "react";
+import LoginScreen from "./components/Intro/LoginScreen";
 import Desktop from "./components/Desktop/Desktop";
+import MobilePhone from "./components/Mobile/MobilePhone";
 
 import "./styles/App.css";
 
@@ -13,21 +13,25 @@ import "./styles/App.css";
 
 function App() {
   // State variables to track the application's state
-  const [isStarted, setIsStarted] = useState(false); // Whether the app has started
   const [isFocused, setIsFocused] = useState(true); // Whether the app has focus
-  const [isConfirmStartClicked, setIsConfirmStartClicked] = useState(false); // Whether the start confirmation screen has been clicked
-  const [hasStarted, setHasStarted] = useState(false); // Whether the bootup sequence has started
-  const [isFinalClicked, setIsFinalClicked] = useState(false); // Whether the final confirmation screen has been clicked
+  const [isFinalClicked, setIsFinalClicked] = useState(false); // Whether the login has been completed
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
-  /**
-   * Updates the state of 'isConfirmStartClicked' based on the provided action.
-   *
-   * @param {boolean} action - The action to update the state with.
-   */
-  const handleConfirmStartClick = (action) => {
-    setIsConfirmStartClicked(action);
-    setHasStarted(true);
-  };
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobileWidth = window.innerWidth <= 900;
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      setIsMobileDevice((mobileWidth && coarsePointer) || mobileUA);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   /**
    * Updates the state of 'isFocused' based on the provided action.
@@ -38,44 +42,26 @@ function App() {
     setIsFocused(action);
   };
 
-  const handleFinalClick = (action) => {
+  const handleLogin = (action) => {
     setIsFinalClicked(action);
-    setHasStarted(!action)
   };
-  
 
   return (
     // Main container for the app
     <div
       className="App"
-      // Event handlers for focus and keydown
+      // Event handlers for focus
       onClick={() => setIsFocused(false)}
-      onKeyDown={() => setIsStarted(true)}
     >
+      {isMobileDevice && <MobilePhone />}
 
-
-      {/* Confirmation start screen */}
-      {!isConfirmStartClicked && (
-        <div className="intro_fadeout">
-          <ConfirmStart
-            toggleClicked={handleConfirmStartClick} // Handler for toggling the confirmation screen
-            clickedState={isConfirmStartClicked} // State for whether the confirmation screen is clicked
-            />
-        </div>
-      )}
-      
-      {/* Terminal screen */}
-      {hasStarted && (
-          <TerminalScreen
-            hasStarted={isStarted} // State for whether the app has started
-            hasFocused={isFocused} // State for whether the app has focus
-            toggleFocused={handleFocus} // Handler for toggling the app's focus
-            toggleClicked={handleFinalClick} // Handler for toggling the final confirmation screen
-            clickedState={isFinalClicked} // State for whether the final confirmation screen is clicked
+      {!isMobileDevice && !isFinalClicked && (
+          <LoginScreen
+            toggleClicked={handleLogin} // Handler for login
             />
       )}
 
-      {isFinalClicked && <Desktop/> }
+      {!isMobileDevice && isFinalClicked && <Desktop/> }
     </div>
   );
 }

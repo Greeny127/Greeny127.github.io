@@ -1,35 +1,10 @@
 import React from 'react'
-import { useState, useContext, useEffect } from 'react';
-import { WindowFocusList } from "../Desktop";
 
-function DesktopIcon({iconPath, tag, title, content, windowListHandler}) {
-    const [hasClicked, sethasClicked] = useState(false);
-    const windowList = useContext(WindowFocusList);
-
-    useEffect(() => {
-        if (tag){
-            if (windowList.filter((window) => window.props.tag === tag)[0]) {
-            sethasClicked(state => true);
-            }
-            else{
-            sethasClicked(state => false);
-        }
-
-    }  
-    }, [windowList]);
-
+function DesktopIcon({iconPath, tag, title, content, windowListHandler, icon}) {
     const hasClickedHandler = () => {
-    if (hasClicked) {
-        // Remove the window with the given tag from the list
-        // windowFocusListHandler("remove", tag);
-        windowListHandler("remove", tag);
-        sethasClicked(false);
-    } else {
-        // Add a new window to the list
-        // windowFocusListHandler("add", tag);
-        windowListHandler("add", tag, title, content);
-        sethasClicked(true);
-    }
+        // Always open a new window with a unique tag
+        const uniqueTag = `${tag}_${Date.now()}`;
+        windowListHandler("add", uniqueTag, title, content, icon);
     };
 
     return (

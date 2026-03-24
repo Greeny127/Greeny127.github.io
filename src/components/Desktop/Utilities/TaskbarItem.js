@@ -1,34 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
-import { WindowFocusList } from "../Desktop";
+import React from "react";
 
-function TaskbarItem({ imageIcon, startIcon, tag, title, content, windowListHandler }) {
-  const [hasClicked, sethasClicked] = useState(false);
-  const windowList = useContext(WindowFocusList);
-
-  useEffect(() => {
-    console.log(windowList.filter((window) => window.props.tag === tag))
-    if (tag){
-      if (windowList.filter((window) => window.props.tag === tag)[0]) {
-        sethasClicked(state => true);
-      }
-      else{
-        sethasClicked(state => false);
-      }
-
-    }  
-  }, [windowList]);
-
-  const hasClickedHandler = () => {
-    if (hasClicked) {
-      // Remove the window with the given tag from the list
-      // windowFocusListHandler("remove", tag);
-      windowListHandler("remove", tag);
-      sethasClicked(false);
-    } else {
-      // Add a new window to the list
-      // windowFocusListHandler("add", tag);
-      windowListHandler("add", tag, title, content);
-      sethasClicked(true);
+function TaskbarItem({ imageIcon, startIcon, tag, title, windowListHandler, isHidden, isFocused }) {
+  const handleClick = () => {
+    if (tag !== "startmenu" && windowListHandler) {
+      // Toggle window visibility
+      windowListHandler("toggle", tag);
     }
   };
 
@@ -37,18 +13,28 @@ function TaskbarItem({ imageIcon, startIcon, tag, title, content, windowListHand
       className={
         startIcon
           ? "taskbarIconNotClicked"
-          : hasClicked
-          ? "taskbarIconClicked"
-          : "taskbarIconNotClicked"
+          : isFocused
+          ? "taskbarIconFocused"
+          : isHidden
+          ? "taskbarIconHidden"
+          : "taskbarIconShown"
       }
-      onMouseDown={() => {
-        if (tag !== "startmenu"){
-
-          hasClickedHandler();
-        }
-      }}
+      onMouseDown={handleClick}
+      title={title}
     >
-      <img src={imageIcon} className={"taskbarIconImage"} />
+      {imageIcon && <img src={imageIcon} alt={tag} className="taskbarIconImage" />}
+      {!startIcon && (
+        <span
+          className={
+            isFocused
+              ? "taskbarStateDot focused"
+              : isHidden
+              ? "taskbarStateDot hidden"
+              : "taskbarStateDot shown"
+          }
+          title={isFocused ? "Focused" : isHidden ? "Hidden" : "Shown"}
+        />
+      )}
     </div>
   );
 }

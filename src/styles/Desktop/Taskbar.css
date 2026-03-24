@@ -23,6 +23,7 @@
 
 .taskbarIconNotClicked {
   width: 7vh;
+  position: relative;
 }
 
 .taskbarIconNotClicked:hover {
@@ -30,13 +31,56 @@
   background-color: rgb(133, 133, 133);
 }
 
+.taskbarIconShown:hover,
+.taskbarIconFocused:hover,
+.taskbarIconHidden:hover,
 .taskbarIconClicked:hover {
   transition: all 0.15s;
   background-color: rgb(133, 133, 133);
 }
 
+.taskbarIconShown,
 .taskbarIconClicked {
   width: 7vh;
   margin-left: 1vh;
   border-bottom: 0.5vh solid whitesmoke;
+  position: relative;
+}
+
+.taskbarIconFocused {
+  width: 7vh;
+  margin-left: 1vh;
+  border-bottom: 0.5vh solid rgb(0, 200, 255);
+  background-color: rgb(122, 122, 122);
+  position: relative;
+}
+
+.taskbarIconHidden {
+  width: 7vh;
+  margin-left: 1vh;
+  border-bottom: 0.5vh solid rgb(100, 100, 100);
+  opacity: 0.75;
+  position: relative;
+}
+
+.taskbarStateDot {
+  position: absolute;
+  right: 0.4vh;
+  top: 0.4vh;
+  width: 0.9vh;
+  height: 0.9vh;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.taskbarStateDot.shown {
+  background-color: #9ef06a;
+}
+
+.taskbarStateDot.hidden {
+  background-color: #8c8c8c;
+}
+
+.taskbarStateDot.focused {
+  background-color: #19d7ff;
 }
