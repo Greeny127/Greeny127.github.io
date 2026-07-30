@@ -82,12 +82,18 @@
     filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6)) brightness(0.75) saturate(2) sepia(0.4) hue-rotate(190deg);
 }
 
+/* Explicit low z-index matters here: without it, this full-viewport layer
+   (z-index: auto) and unfocused Windows (formerly z-index: 0) would sit at
+   the same stacking level and DOM order would decide the winner - since
+   this renders after the windows in Desktop.js, it would silently swallow
+   every click meant for an unfocused window underneath it. */
 .desktopArea {
     position: relative;
     overflow: hidden;
     height: calc(100vh - 7vh);
     width: 100vw;
     box-sizing: border-box;
+    z-index: 1;
 }
 
 .shutdown-overlay {

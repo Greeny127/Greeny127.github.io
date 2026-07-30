@@ -17,7 +17,7 @@
   border-color: var(--win-light, #dfdfdf) var(--win-shadow, #808080) var(--win-shadow, #808080) var(--win-light, #dfdfdf);
   box-shadow: inset 1px 1px 0 var(--win-highlight, #fff), inset -1px -1px 0 var(--win-darkshadow, #000),
     2px 3px 10px rgba(0, 0, 0, 0.35);
-  z-index: 0;
+  z-index: 10;
 }
 
 .windowFocused {
@@ -27,7 +27,7 @@
 }
 
 .windowUnfocused {
-  z-index: 0;
+  z-index: 10;
 }
 
 /* Animates independently of the outer .Window node, which react-draggable

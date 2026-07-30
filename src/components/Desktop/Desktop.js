@@ -277,7 +277,7 @@ function Desktop() {
     return (
         <div className="desktop" style={{ backgroundColor: wallpaperColor }}>
             {/* Window components - render from stored data */}
-            {windowList.map((windowData) => {
+            {windowList.map((windowData, index) => {
                 if (!windowData.tag) return null; // Skip empty initial state
                 const isHidden = hiddenWindows[windowData.tag];
                 if (isHidden) return null;
@@ -290,6 +290,7 @@ function Desktop() {
                         tag={windowData.tag}
                         windowListHandler={handleWindowList}
                         isFocused={focusedWindowTag === windowData.tag}
+                        cascadeIndex={index}
                     />
                 );
             })}

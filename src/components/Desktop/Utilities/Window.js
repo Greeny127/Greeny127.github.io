@@ -11,7 +11,7 @@ const CLOSE_ANIM_MS = 140;
  * @return {JSX.Element} The rendered Window component.
  */
 
-function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandler, isFocused }) {
+function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandler, isFocused, cascadeIndex = 0 }) {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const nodeRef = useRef(null);
@@ -24,9 +24,21 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
     const defaultWidth = Math.min(Math.max(window.innerWidth * 0.55, 360), window.innerWidth * 0.94);
     const defaultHeight = Math.min(Math.max(window.innerHeight * 0.6, 260), window.innerHeight * 0.86);
 
+    const baseX = Math.max((window.innerWidth - defaultWidth) / 2, 8);
+    const baseY = Math.max((window.innerHeight - defaultHeight) / 2, 8);
+
+    // Cascade each successive window diagonally so newly opened/focused
+    // windows don't spawn exactly on top of existing ones and permanently
+    // hide them - without this, every window computes the same centered
+    // position and a focused window fully occludes whatever is beneath it.
+    const cascadeStep = 28;
+    const cascadeSlot = cascadeIndex % 8;
+    const maxX = window.innerWidth - defaultWidth - 8;
+    const maxY = window.innerHeight * 0.93 - defaultHeight - 8;
+
     return {
-      x: Math.max((window.innerWidth - defaultWidth) / 2, 8),
-      y: Math.max((window.innerHeight - defaultHeight) / 2, 8),
+      x: Math.min(Math.max(baseX + cascadeSlot * cascadeStep, 8), Math.max(maxX, 8)),
+      y: Math.min(Math.max(baseY + cascadeSlot * cascadeStep, 8), Math.max(maxY, 8)),
     };
   });
 
