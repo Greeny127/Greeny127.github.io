@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import Draggable from 'react-draggable';
 import "../../../styles/Desktop/Window.css";
 
@@ -11,10 +11,13 @@ const CLOSE_ANIM_MS = 140;
  * @return {JSX.Element} The rendered Window component.
  */
 
-function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandler, isFocused, cascadeIndex = 0 }) {
+function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandler, isFocused, isHidden = false, cascadeIndex = 0 }) {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const nodeRef = useRef(null);
+  // Tracks the window's last known dragged position and pre-maximize size so
+  // minimizing/maximizing can restore them instead of resetting to spawn defaults.
+  const lastSizeRef = useRef(null);
 
   const [defaultPosition] = useState(() => {
     if (typeof window === "undefined") {
@@ -42,6 +45,25 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
     };
   });
 
+  // Draggable is uncontrolled - it only reads `defaultPosition` once, at mount.
+  // Since the maximize toggle unmounts/remounts it (it lives in a different
+  // JSX branch than the maximized view), we track the latest dragged
+  // position ourselves and feed it back in as the new `defaultPosition` so
+  // restoring from maximize returns to where the window actually was.
+  const lastPositionRef = useRef(defaultPosition);
+
+  // Applied imperatively (not via the `style` prop) so it only runs once per
+  // restore and doesn't fight the browser's native `resize` handle on
+  // unrelated re-renders (a style-prop value gets re-applied on every
+  // render, which would undo any manual resize the user made afterward).
+  useLayoutEffect(() => {
+    if (!isMaximized && lastSizeRef.current && nodeRef.current) {
+      nodeRef.current.style.width = `${lastSizeRef.current.width}px`;
+      nodeRef.current.style.height = `${lastSizeRef.current.height}px`;
+      lastSizeRef.current = null;
+    }
+  }, [isMaximized]);
+
   const handleFocus = () => windowListHandler("focus", tag);
 
   const handleClose = (e) => {
@@ -57,6 +79,12 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
 
   const handleMaximizeToggle = (e) => {
     if (e) e.stopPropagation();
+    if (!isMaximized && nodeRef.current) {
+      // About to maximize - remember the exact size (including any manual
+      // resize) so restoring returns to it instead of the spawn default.
+      const rect = nodeRef.current.getBoundingClientRect();
+      lastSizeRef.current = { width: rect.width, height: rect.height };
+    }
     setIsMaximized((prev) => !prev);
     handleFocus();
   };
@@ -70,6 +98,10 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
     isMaximized ? "windowMaximized" : ""
   }`;
   const innerClassName = `WindowInner ${isClosing ? "windowClosing" : "windowOpening"}`;
+  // Kept mounted (rather than unmounted) while minimized, via display:none,
+  // so the Draggable's internal position state and any manual resize survive
+  // a minimize/restore cycle instead of resetting.
+  const hiddenStyle = isHidden ? { display: "none" } : undefined;
 
   const titlebar = (
     <div className="windowHandle" onDoubleClick={handleMaximizeToggle}>
@@ -105,7 +137,7 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
 
   if (isMaximized) {
     return (
-      <div className={outerClassName} onMouseDown={handleFocus}>
+      <div className={outerClassName} style={hiddenStyle} onMouseDown={handleFocus}>
         {inner}
       </div>
     );
@@ -117,9 +149,12 @@ function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandle
       nodeRef={nodeRef}
       handle=".windowHandle"
       onMouseDown={handleFocus}
-      defaultPosition={defaultPosition}
+      defaultPosition={lastPositionRef.current}
+      onStop={(e, data) => {
+        lastPositionRef.current = { x: data.x, y: data.y };
+      }}
     >
-      <div ref={nodeRef} className={outerClassName} onMouseDown={handleFocus}>
+      <div ref={nodeRef} className={outerClassName} style={hiddenStyle} onMouseDown={handleFocus}>
         {inner}
       </div>
     </Draggable>

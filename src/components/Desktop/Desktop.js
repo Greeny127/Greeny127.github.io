@@ -279,8 +279,6 @@ function Desktop() {
             {/* Window components - render from stored data */}
             {windowList.map((windowData, index) => {
                 if (!windowData.tag) return null; // Skip empty initial state
-                const isHidden = hiddenWindows[windowData.tag];
-                if (isHidden) return null;
                 return (
                     <Window
                         key={windowData.tag}
@@ -290,6 +288,7 @@ function Desktop() {
                         tag={windowData.tag}
                         windowListHandler={handleWindowList}
                         isFocused={focusedWindowTag === windowData.tag}
+                        isHidden={!!hiddenWindows[windowData.tag]}
                         cascadeIndex={index}
                     />
                 );
