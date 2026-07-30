@@ -1,0 +1,87 @@
+/* Shared Windows-95-esque theme: palette, bevel utilities, keyframes */
+
+:root {
+  --win-face: #c0c0c0;
+  --win-face-dark: #a6a6a6;
+  --win-light: #dfdfdf;
+  --win-highlight: #ffffff;
+  --win-shadow: #808080;
+  --win-darkshadow: #000000;
+  --win-titlebar: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  --win-titlebar-inactive: linear-gradient(90deg, #7f7f7f 0%, #a4a4a4 100%);
+  --win-desktop-teal: #008080;
+}
+
+/* Raised 3D bevel (buttons, panels at rest) */
+.win95-raised {
+  border: 2px solid;
+  border-color: var(--win-light) var(--win-shadow) var(--win-shadow) var(--win-light);
+  box-shadow: inset 1px 1px 0 var(--win-highlight), inset -1px -1px 0 var(--win-darkshadow);
+}
+
+/* Sunken 3D bevel (pressed buttons, inset fields, active state) */
+.win95-sunken {
+  border: 2px solid;
+  border-color: var(--win-shadow) var(--win-light) var(--win-light) var(--win-shadow);
+  box-shadow: inset 1px 1px 0 var(--win-darkshadow), inset -1px -1px 0 var(--win-highlight);
+}
+
+@keyframes windowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes windowClose {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes menuSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialogPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes trayBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.35; }
+}

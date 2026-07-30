@@ -1,0 +1,38 @@
+.ctx-menu {
+  position: fixed;
+  min-width: 170px;
+  background: var(--win-face, #c0c0c0);
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+  z-index: 3000;
+  animation: menuSlideUp 0.1s ease-out;
+}
+
+.ctx-item {
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 5px 12px;
+  font-size: 14px;
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  color: #000;
+  cursor: pointer;
+}
+
+.ctx-item:hover:not(:disabled) {
+  background: #000080;
+  color: #fff;
+}
+
+.ctx-item:disabled {
+  color: #808080;
+  cursor: not-allowed;
+}
+
+.ctx-divider {
+  height: 1px;
+  margin: 3px 2px;
+  background: var(--win-shadow, #808080);
+  box-shadow: 0 1px 0 var(--win-highlight, #fff);
+}

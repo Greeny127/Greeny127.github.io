@@ -1,86 +1,164 @@
-* {
-  padding: 0;
-  margin: 0;
-}
+@import url("./theme.css");
 
 .taskbar-comp {
-  background: rgb(153, 153, 153);
+  background: var(--win-face, #c0c0c0);
   display: flex;
+  align-items: center;
   position: absolute;
   bottom: 0;
+  left: 0;
   height: 7vh;
   width: 100vw;
   user-select: none;
+  box-sizing: border-box;
+  padding: 0.5vh 0.6vh;
+  gap: 0.6vh;
+  border-top: 2px solid;
+  border-color: var(--win-light, #dfdfdf) transparent transparent transparent;
+  box-shadow: 0 -1px 0 var(--win-highlight, #fff) inset, 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 
-.taskbarIconImage {
-  width: 5vh;
-  padding-top: 0.8vh;
-  text-align: center;
-  margin-left: 0.6vh;
-  display: inline-block;
+.startButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  height: 100%;
+  padding: 0 1.2vh;
+  background: var(--win-face, #c0c0c0);
+  border: 2px solid;
+  border-color: var(--win-light, #dfdfdf) var(--win-shadow, #808080) var(--win-shadow, #808080) var(--win-light, #dfdfdf);
+  box-shadow: inset 1px 1px 0 var(--win-highlight, #fff), inset -1px -1px 0 var(--win-darkshadow, #000);
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 2.2vh;
+  font-family: "VT323", Arial, sans-serif;
+  color: #000;
+  flex-shrink: 0;
 }
 
-.taskbarIconNotClicked {
-  width: 7vh;
-  position: relative;
+.startButton:hover {
+  background: var(--win-light, #dfdfdf);
 }
 
-.taskbarIconNotClicked:hover {
-  transition: all 0.15s;
-  background-color: rgb(133, 133, 133);
+.startButtonPressed,
+.startButton:active {
+  border-color: var(--win-shadow, #808080) var(--win-light, #dfdfdf) var(--win-light, #dfdfdf) var(--win-shadow, #808080);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #fff;
+  background: var(--win-face, #c0c0c0);
 }
 
-.taskbarIconShown:hover,
-.taskbarIconFocused:hover,
-.taskbarIconHidden:hover,
-.taskbarIconClicked:hover {
-  transition: all 0.15s;
-  background-color: rgb(133, 133, 133);
+.startButtonImage {
+  width: 2.8vh;
+  height: 2.8vh;
+  image-rendering: pixelated;
+}
+
+.taskbar-divider {
+  width: 2px;
+  height: 80%;
+  flex-shrink: 0;
+  background: var(--win-shadow, #808080);
+  box-shadow: 1px 0 0 var(--win-highlight, #fff);
+}
+
+.taskbar-open-windows {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  height: 100%;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+}
+
+.taskbar-open-windows::-webkit-scrollbar {
+  height: 4px;
 }
 
 .taskbarIconShown,
-.taskbarIconClicked {
-  width: 7vh;
-  margin-left: 1vh;
-  border-bottom: 0.5vh solid whitesmoke;
-  position: relative;
+.taskbarIconFocused,
+.taskbarIconHidden {
+  display: flex;
+  align-items: center;
+  gap: 0.6vh;
+  height: 100%;
+  min-width: 10vh;
+  max-width: 20vh;
+  flex-shrink: 0;
+  padding: 0 1vh;
+  font-size: 2vh;
+  font-family: "VT323", Arial, sans-serif;
+  color: #000;
+  cursor: pointer;
+  border: 2px solid;
+  animation: iconPop 0.16s ease-out;
+}
+
+.taskbarIconShown,
+.taskbarIconHidden {
+  border-color: var(--win-light, #dfdfdf) var(--win-shadow, #808080) var(--win-shadow, #808080) var(--win-light, #dfdfdf);
+  box-shadow: inset 1px 1px 0 var(--win-highlight, #fff), inset -1px -1px 0 var(--win-darkshadow, #000);
+  background: var(--win-face, #c0c0c0);
 }
 
 .taskbarIconFocused {
-  width: 7vh;
-  margin-left: 1vh;
-  border-bottom: 0.5vh solid rgb(0, 200, 255);
-  background-color: rgb(122, 122, 122);
-  position: relative;
+  border-color: var(--win-shadow, #808080) var(--win-light, #dfdfdf) var(--win-light, #dfdfdf) var(--win-shadow, #808080);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #fff;
+  background: var(--win-face-dark, #a6a6a6);
+  font-weight: bold;
 }
 
 .taskbarIconHidden {
-  width: 7vh;
-  margin-left: 1vh;
-  border-bottom: 0.5vh solid rgb(100, 100, 100);
   opacity: 0.75;
-  position: relative;
 }
 
-.taskbarStateDot {
-  position: absolute;
-  right: 0.4vh;
-  top: 0.4vh;
-  width: 0.9vh;
-  height: 0.9vh;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.4);
+.taskbarIconShown:hover,
+.taskbarIconHidden:hover {
+  background: var(--win-light, #dfdfdf);
 }
 
-.taskbarStateDot.shown {
-  background-color: #9ef06a;
+.taskbarIconImage {
+  width: 2.6vh;
+  height: 2.6vh;
+  flex-shrink: 0;
+  image-rendering: pixelated;
 }
 
-.taskbarStateDot.hidden {
-  background-color: #8c8c8c;
+.taskbarIconLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.taskbarStateDot.focused {
-  background-color: #19d7ff;
+.taskbar-tray {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6vh;
+  height: 90%;
+  padding: 0 1.2vh;
+  font-size: 1.7vh;
+  line-height: 1.25;
+  color: #000;
+  flex-shrink: 0;
+  background: var(--win-face, #c0c0c0);
+}
+
+.tray-clock-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tray-clock {
+  font-weight: bold;
+  font-size: 2vh;
+}
+
+.tray-date {
+  font-size: 1.5vh;
 }

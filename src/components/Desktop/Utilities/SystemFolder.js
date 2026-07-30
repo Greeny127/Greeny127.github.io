@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import "../../../styles/Desktop/SystemFolder.css";
 import Notepad from "./Notepad";
+import ConfirmDialog from "./ConfirmDialog";
 import folderIcon from "../../../Icons/Folder/folder.ico";
 import fileIcon from "../../../Icons/Folder/notepad-document.ico";
 import notepadIcon from "../../../Icons/Programs/notepad.ico";
 
 function SystemFolder({ windowListHandler }) {
   const [currentPath, setCurrentPath] = useState("C:\\System");
+  const [unsupportedFile, setUnsupportedFile] = useState(null);
 
   // Mock file system structure with content
   const fileSystem = {
@@ -63,6 +65,8 @@ function SystemFolder({ windowListHandler }) {
       const uniqueTag = `notepad_${Date.now()}`;
       const notepadContent = <Notepad fileContent={item.content || ""} fileName={item.name} />;
       windowListHandler("add", uniqueTag, item.name, notepadContent, notepadIcon);
+    } else if (item.type === "file") {
+      setUnsupportedFile(item.name);
     }
   };
 
@@ -129,6 +133,17 @@ function SystemFolder({ windowListHandler }) {
       <div className="folder-statusbar">
         <span>{files.length} object(s)</span>
       </div>
+
+      {unsupportedFile && (
+        <ConfirmDialog
+          title={unsupportedFile}
+          message={`Windows cannot open this file.\n\nTo open this file, Windows needs to know what program you meant to make this joke with.`}
+          icon="!"
+          confirmLabel="OK"
+          onConfirm={() => setUnsupportedFile(null)}
+          onCancel={() => setUnsupportedFile(null)}
+        />
+      )}
     </div>
   );
 }

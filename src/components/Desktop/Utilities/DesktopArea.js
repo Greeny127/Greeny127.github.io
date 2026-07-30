@@ -2,7 +2,7 @@ import React from 'react'
 
 function DesktopArea(props) {
   return (
-    <div className='desktopArea'>{props.children}</div>
+    <div className='desktopArea' onClick={props.onDeselect} onContextMenu={props.onContextMenu}>{props.children}</div>
   )
 }
 

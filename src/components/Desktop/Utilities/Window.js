@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Draggable from 'react-draggable';
 import "../../../styles/Desktop/Window.css";
 
+const CLOSE_ANIM_MS = 140;
+
 /**
- * Window component that allows dragging and handles focus.
+ * Window component that allows dragging, focus, minimize, maximize and close.
  *
  * @param {Object} props - The props object.
  * @return {JSX.Element} The rendered Window component.
  */
 
-function Window({windowHandle, windowContent, tag, windowListHandler, isFocused}) {
+function Window({ windowHandle, windowContent, windowIcon, tag, windowListHandler, isFocused }) {
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const nodeRef = useRef(null);
+
   const [defaultPosition] = useState(() => {
     if (typeof window === "undefined") {
       return { x: 20, y: 20 };
@@ -24,25 +30,85 @@ function Window({windowHandle, windowContent, tag, windowListHandler, isFocused}
     };
   });
 
+  const handleFocus = () => windowListHandler("focus", tag);
+
+  const handleClose = (e) => {
+    e.stopPropagation();
+    setIsClosing(true);
+    setTimeout(() => windowListHandler("remove", tag), CLOSE_ANIM_MS);
+  };
+
+  const handleMinimize = (e) => {
+    e.stopPropagation();
+    windowListHandler("toggle", tag);
+  };
+
+  const handleMaximizeToggle = (e) => {
+    if (e) e.stopPropagation();
+    setIsMaximized((prev) => !prev);
+    handleFocus();
+  };
+
+  // Positioning/sizing classes live on the outer (Draggable-controlled) node.
+  // Draggable applies its own `transform: translate(x, y)` inline style to
+  // that node, so the open/close scale+fade animation must live on an inner
+  // wrapper instead - animating `transform` on the same node Draggable
+  // positions would fight with it and cause a flash-then-snap jump.
+  const outerClassName = `Window ${isFocused ? "windowFocused" : "windowUnfocused"} ${
+    isMaximized ? "windowMaximized" : ""
+  }`;
+  const innerClassName = `WindowInner ${isClosing ? "windowClosing" : "windowOpening"}`;
+
+  const titlebar = (
+    <div className="windowHandle" onDoubleClick={handleMaximizeToggle}>
+      <div className="windowHandleTitle">
+        {windowIcon && <img src={windowIcon} alt="" className="windowHandleIcon" />}
+        <span className="windowHandleText">{windowHandle}</span>
+      </div>
+      <div className="windowControls">
+        <button className="windowBtn windowMinimize" onClick={handleMinimize} title="Minimize" aria-label="Minimize">
+          <span className="windowBtnGlyph windowBtnGlyphMinimize" />
+        </button>
+        <button
+          className="windowBtn windowMaximize"
+          onClick={handleMaximizeToggle}
+          title={isMaximized ? "Restore" : "Maximize"}
+          aria-label="Maximize"
+        >
+          <span className={isMaximized ? "windowBtnGlyph windowBtnGlyphRestore" : "windowBtnGlyph windowBtnGlyphMaximize"} />
+        </button>
+        <button className="windowBtn windowClose" onClick={handleClose} title="Close" aria-label="Close">
+          <span className="windowBtnGlyph windowBtnGlyphClose">x</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  const inner = (
+    <div className={innerClassName}>
+      {titlebar}
+      <div className="windowBody">{windowContent}</div>
+    </div>
+  );
+
+  if (isMaximized) {
+    return (
+      <div className={outerClassName} onMouseDown={handleFocus}>
+        {inner}
+      </div>
+    );
+  }
+
   return (
     // Wrap the window with Draggable to allow dragging
     <Draggable
+      nodeRef={nodeRef}
       handle=".windowHandle"
-      onMouseDown={() => {windowListHandler("focus", tag);}}
+      onMouseDown={handleFocus}
       defaultPosition={defaultPosition}
     >
-      <div
-        // Set the class name based on props and focus state
-        className={`Window ${isFocused ? "windowFocused" : "windowUnfocused"}`}
-        onMouseDown={() => {windowListHandler("focus", tag);}}
-      >
-        {/* Window handle */}
-        <div className="windowHandle">
-          {windowHandle}
-          <button className="windowClose" onClick={() => {windowListHandler("remove", tag);}}>X</button>
-        </div>
-        {/* Window content */}
-        {windowContent}
+      <div ref={nodeRef} className={outerClassName} onMouseDown={handleFocus}>
+        {inner}
       </div>
     </Draggable>
   );

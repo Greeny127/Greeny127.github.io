@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('./theme.css');
 
 .desktop,
 .desktop * {
@@ -7,21 +8,97 @@
     font-style: normal;
 }
 
-.desktopIconImage {
-    width: 7vh;
-    padding-top: 0.8vh;
-    display: block;
-    cursor: pointer;
+.desktop {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #008080;
+    background-image: none;
+    background-size: cover;
+    background-position: center;
 }
 
+.desktopIconImage {
+    width: 48px;
+    display: block;
+    cursor: pointer;
+    pointer-events: none;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6));
+}
+
+/* Positioned absolutely and moved via react-draggable's transform - the
+   x/y passed in from Desktop.js already account for desktop padding, and
+   must stay in sync with the CELL_WIDTH/CELL_HEIGHT grid constants in
+   DesktopIcon.js. */
 .desktopIconDiv {
-    width: 7vh;
-    margin: 3vh;
-    font-size: 2.3vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 88px;
+    box-sizing: border-box;
+    font-size: 13px;
     text-align: center;
     user-select: none;
+    cursor: pointer;
+    padding: 6px 4px;
+    border-radius: 1px;
+    animation: iconPop 0.18s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.desktopIconDiv h3 {
+    margin: 0.4vh 0 0 0;
+    padding: 0 0.2vh;
+    font-weight: 400;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    line-height: 1.2;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+/* Authentic Win95 selection: a solid highlight box behind icon + label,
+   plus a dotted keyboard-focus rectangle, instead of a translucent tint. */
+.desktopIconSelected {
+    background-color: rgba(0, 0, 128, 0.4);
+    outline: 1px dotted #fff;
+    outline-offset: -1px;
+}
+
+.desktopIconSelected h3 {
+    background-color: #000080;
+    text-shadow: none;
+}
+
+.desktopIconSelected .desktopIconImage {
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6)) brightness(0.75) saturate(2) sepia(0.4) hue-rotate(190deg);
 }
 
 .desktopArea {
+    position: relative;
     overflow: hidden;
+    height: calc(100vh - 7vh);
+    width: 100vw;
+    box-sizing: border-box;
+}
+
+.shutdown-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4vh;
+    z-index: 9999;
+    animation: dialogPop 0.3s ease-out;
 }

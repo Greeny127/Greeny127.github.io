@@ -11,6 +11,46 @@
   overflow: hidden;
 }
 
+.notepad-menubar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #c0c0c0;
+  padding: 3px 8px;
+  border-bottom: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+  flex-shrink: 0;
+}
+
+.notepad-menu-btn {
+  padding: 2px 10px;
+  font-size: 11px;
+  font-family: "MS Sans Serif", Arial, sans-serif;
+  border: 2px solid;
+  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+  background: #c0c0c0;
+  cursor: pointer;
+}
+
+.notepad-menu-btn:active {
+  border-color: #808080 #dfdfdf #dfdfdf #808080;
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #fff;
+}
+
+.notepad-menu-label {
+  font-size: 12px;
+  color: #000;
+  cursor: default;
+  user-select: none;
+}
+
+.notepad-saved-flash {
+  margin-left: auto;
+  font-size: 11px;
+  color: #006400;
+  font-weight: bold;
+}
+
 .notepad-content {
   flex: 1;
   overflow: auto;

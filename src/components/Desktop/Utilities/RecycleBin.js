@@ -1,22 +1,20 @@
 import React, { useState } from "react";
+import ConfirmDialog from "./ConfirmDialog";
 import "../../../styles/Desktop/RecycleBin.css";
 
-function RecycleBin() {
-  const [items, setItems] = useState([
-    { id: 1, name: "old-notes.txt", type: "Text Document", deletedAt: "Today" },
-    { id: 2, name: "draft-logo.png", type: "PNG Image", deletedAt: "Today" },
-    { id: 3, name: "todo-backup.doc", type: "Word Document", deletedAt: "Yesterday" },
-  ]);
+function RecycleBin({ items, onEmpty, onRestore }) {
   const [selectedId, setSelectedId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleEmptyBin = () => {
-    setItems([]);
+    onEmpty();
     setSelectedId(null);
+    setShowConfirm(false);
   };
 
   const handleRestore = () => {
     if (!selectedId) return;
-    setItems((prev) => prev.filter((item) => item.id !== selectedId));
+    onRestore(selectedId);
     setSelectedId(null);
   };
 
@@ -26,7 +24,7 @@ function RecycleBin() {
         <button className="bin-btn" onClick={handleRestore} disabled={!selectedId}>
           Restore
         </button>
-        <button className="bin-btn" onClick={handleEmptyBin} disabled={items.length === 0}>
+        <button className="bin-btn" onClick={() => setShowConfirm(true)} disabled={items.length === 0}>
           Empty Recycle Bin
         </button>
       </div>
@@ -59,6 +57,18 @@ function RecycleBin() {
       <div className="bin-statusbar">
         <span>{items.length} object(s)</span>
       </div>
+
+      {showConfirm && (
+        <ConfirmDialog
+          title="Confirm Multiple File Delete"
+          message={`Are you sure you want to permanently delete ${items.length} item(s)?`}
+          icon="!"
+          confirmLabel="Yes"
+          cancelLabel="No"
+          onConfirm={handleEmptyBin}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
     </div>
   );
 }
